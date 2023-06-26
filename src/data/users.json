@@ -1,0 +1,23 @@
+[
+  {
+    "username": "JohnDoe",
+    "password": "uiR4a@aQ",
+    "description": "User without credit",
+    "credit": 0,
+    "limited": true
+  },
+  {
+    "username": "YvesR",
+    "password": "9Cfd2#Bw",
+    "description": "User with one VM only",
+    "credit": 50,
+    "limited": true
+  },
+  {
+    "username": "PierreM",
+    "password": "#A6tfiWg",
+    "description": "User with full access",
+    "credit": 100,
+    "limited": false
+  }
+]
