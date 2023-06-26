@@ -12,6 +12,7 @@ const logger = pino({
     options: { colorize: true },
   },
 })
+const deleteTime = 600000
 
 const createAndDeleteVmFunction = async (req) => {
   const { publisher, offer, sku } = req
@@ -65,30 +66,25 @@ const createAndDeleteVmFunction = async (req) => {
   const storageClient = new StorageManagementClient(credentials, subscriptionId)
   const networkClient = new NetworkManagementClient(credentials, subscriptionId)
 
-  // let authResult = null
-
   //*************** Create resources then manage them (on/off) ******************//
   const createVm = async () => {
-    // const testDeleteTime = 30000 // ! 30 seconds only for testing
     try {
       await createResources()
       await manageResources()
 
-      const deletionDate = new Date(Date.now() + 600000)
+      const deletionDate = new Date(Date.now() + deleteTime)
       logger.info("This virtual machine will be deleted: " + deletionDate)
 
       setTimeout(() => {
         deleteResourceGroup()
-      }, /*testDeleteTime*/ 600000) // Delete resource group after 10 minutes (600000 milliseconds)
+      }, deleteTime)
 
-      return {
-        // ip: authResult.ip,
-        username: adminUsername,
-        password: adminPassword,
-        deletionDate,
-      }
+      logger.info("The VM is created")
+      return { status: 201, message: "Your VM is created" }
     } catch (err) {
+      console.log("HEEEERRRRRREEEEEEE !!!!!!")
       logger.error(err)
+      return { status: 500, message: "An error occured while creating the VM" }
     }
   }
 
@@ -104,7 +100,9 @@ const createAndDeleteVmFunction = async (req) => {
       nicResult = await getNICInfo()
       vmInfo = await createVirtualMachine(nicInfo.id, vmImageInfo[0].name)
     } catch (err) {
+      console.log("HEEEERRRRRREEEEEEE 2222222222 !!!!!!")
       logger.error(err)
+      return { status: 500, message: "An error occured while creating the VM" }
     }
   }
 
@@ -281,8 +279,6 @@ const createAndDeleteVmFunction = async (req) => {
     await getVirtualMachines()
     await turnOffVirtualMachines(resourceGroupName, vmName, computeClient)
     await startVirtualMachines(resourceGroupName, vmName)
-
-    // await getVMInfo()
   }
   const getVirtualMachines = async () => {
     logger.info(`Get VM Info about ${vmName}`)
@@ -326,7 +322,7 @@ const createAndDeleteVmFunction = async (req) => {
     resolve(result)
   })
 }
-// ! -------------------------------------------------------------------------------- //
+
 const getAllIPAddress = async (
   computeClient,
   resourceGroupName,
@@ -355,7 +351,6 @@ const getAllIPAddress = async (
               getPublicIpName(ipConfig.publicIPAddress.id)
             )
             if (publicIP && publicIP.ipAddress) {
-              logger.info("VM Public IP Address:", publicIP.ipAddress)
               return publicIP.ipAddress
             }
 
@@ -393,24 +388,12 @@ const getPublicIpName = (publicIpId) => {
   return parts[parts.length - 1]
 }
 
-// const getVMInfo = async () => {
-//   let vmPublicIPAddress = await getVmIP()
-//   while (vmPublicIPAddress === "noIpFound") {
-//     await sleep(10000) // sleep 10 seconds
-//     vmPublicIPAddress = await getVmIP()
-//   }
-//   authResult = {
-//     ip: vmPublicIPAddress ? vmPublicIPAddress : "noIpFound",
-//     username: adminUsername,
-//     password: adminPassword,
-//   }
-// }
-
 const getAllMachines = async () => {
   const clientId = process.env["AZURE_CLIENT_ID"]
   const domain = process.env["AZURE_TENANT_ID"]
   const secret = process.env["AZURE_CLIENT_SECRET"]
   const subscriptionId = process.env["AZURE_SUBSCRIPTION_ID"]
+  let VMlist = []
 
   if (!clientId || !domain || !secret || !subscriptionId) {
     logger.error("Default credentials couldn't be found")
@@ -418,21 +401,36 @@ const getAllMachines = async () => {
     return { status: 400, error: "Default credentials couldn't be found" }
   }
 
-  // const sleep = (ms) => {
-  //   return new Promise((resolve) => setTimeout(resolve, ms))
-  // }
-
   const credentials = new DefaultAzureCredential()
   const computeClient = new ComputeManagementClient(credentials, subscriptionId)
+  const networkClient = new NetworkManagementClient(credentials, subscriptionId)
 
   const dataVmList = []
   for await (const vm of computeClient.virtualMachines.listAll()) {
     dataVmList.push(vm)
   }
 
-  console.log(dataVmList)
+  const promises = dataVmList.map(async (vm) => {
+    const resourceGroup = vm.id.split("/")[4].toLowerCase()
 
-  return { status: 200, data: dataVmList }
+    const IPAddress = await getAllIPAddress(
+      computeClient,
+      resourceGroup,
+      vm.name,
+      networkClient
+    )
+
+    return {
+      ip: IPAddress,
+      username: "AdminSudo",
+      password: "SudoMDP1993!",
+      os: vm.storageProfile.osDisk.osType,
+    }
+  })
+
+  VMlist = await Promise.all(promises)
+
+  return { status: 200, data: VMlist }
 }
 
 module.exports = {

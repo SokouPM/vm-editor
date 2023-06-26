@@ -20,7 +20,7 @@ app.get("/api/vm/get-all", async (req, res) => {
     if (vms.status !== 200) {
       return res.status(vms.status).send(vms.error)
     }
-    logger.info(vms)
+
     res.status(200).send(vms.data)
   } catch (err) {
     logger.error(err)
@@ -32,7 +32,8 @@ app.post("/api/vm/create", async (req, res) => {
   try {
     createAndDeleteVmFunction(req.body)
       .then((result) => {
-        return res.status(201).send("Your VM is created")
+        console.log("result", result)
+        return res.status(result.status).send(result.message || result.error)
       })
       .catch((err) => {
         logger.error(err)

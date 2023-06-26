@@ -43,16 +43,17 @@ Open [http://localhost:3000](http://localhost:3000) to view the application in y
 
 This application has 3 users with different access rights:
 
-|   | Username | Password | description                                                       |
-|:--|:---------|:---------|:------------------------------------------------------------------|
-| 1 | JohnDoe  | uiR4a@aQ | This user has no credit and therefore cannot create a VM.         |
-| 2 | YvesR    | 9Cfd2#Bw | This user is limited, he can only create one type of VM (Ubuntu). |
-| 3 | PierreM  | #A6tfiWg | This has all access and can therefore create several VMs.         |
+|   | Username | Password | description                                                                                            |
+|:--|:---------|:---------|:-------------------------------------------------------------------------------------------------------|
+| 1 | JohnDoe  | uiR4a@aQ | This user has no credit and therefore cannot create a VM.                                              |
+| 2 | YvesR    | 9Cfd2#Bw | This user is limited, he can only create one type of VM (Ubuntu) and only if there is no other active. |
+| 3 | PierreM  | #A6tfiWg | This has all access and can therefore create several VMs.                                              |
 
 You can use these credentials to log in to the application, also you can modify them or create another one in
 the `src/data/users.json` file.
 
 Once logged in, you will be redirected to the VM list page.<br>
+**⚠️IMPORTANT: If a virtual machine does not display its IP address, wait 1 minute and reload the page⚠️**<br>
 You can create a VM by clicking on the "Create VM" button at the left on the side nav menu.<br>
 **⚠️IMPORTANT: The VM creation process can take up to 5 minutes.⚠️**
 

@@ -1,4 +1,4 @@
-import { Button, Form, Select, Typography } from "antd"
+import { Button, Form, Select, Spin, Typography } from "antd"
 import { useState } from "react"
 import axios from "axios"
 import { PlusCircleOutlined } from "@ant-design/icons"
@@ -7,7 +7,15 @@ const { Text } = Typography
 
 const CreateVMForm = ({ user }) => {
   const [, setValue] = useState("ubuntu")
+  const [loading, setLoading] = useState(true)
+  const [loadingVM, setLoadingVM] = useState(false)
   const [error, setError] = useState(null)
+  const [countVMActive, setCountVMActive] = useState(0)
+
+  axios.get("http://localhost:3001/api/vm/get-all").then((res) => {
+    setCountVMActive(res.data.length)
+    setLoading(false)
+  })
 
   const logInFailed = () => {
     if (error) {
@@ -35,6 +43,7 @@ const CreateVMForm = ({ user }) => {
   }
 
   const handleFinish = (value) => {
+    setLoadingVM(true)
     const { vmChosen } = value
     let data = {}
 
@@ -73,10 +82,11 @@ const CreateVMForm = ({ user }) => {
     axios
       .post("http://localhost:3001/api/vm/create", data)
       .then((res) => {
-        console.log(res)
+        setLoadingVM(false)
+        window.location.reload()
       })
       .catch((err) => {
-        console.log(err)
+        setError(err.response.data)
       })
   }
 
@@ -84,6 +94,36 @@ const CreateVMForm = ({ user }) => {
     return (
       <div className="form-container">
         <Text strong>You don't have enough credit to create a VM</Text>
+      </div>
+    )
+  }
+
+  if (loading) {
+    return (
+      <div className="form-container">
+        <Text strong>
+          <Spin size="large" style={{ marginRight: 10 }} />
+          Loading the VM creation form...
+        </Text>
+      </div>
+    )
+  }
+
+  if (user.limited && countVMActive >= 1) {
+    return (
+      <div className="form-container">
+        <Text strong>Sorry, your account is limited to 1 VM</Text>
+      </div>
+    )
+  }
+
+  if (loadingVM) {
+    return (
+      <div className="form-container">
+        <Text strong>
+          <Spin size="large" style={{ marginRight: 10 }} />
+          Creating VM... It may take a 5 minutes
+        </Text>
       </div>
     )
   }
