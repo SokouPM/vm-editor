@@ -1,6 +1,6 @@
 # Azure VM Creation Application 🕹️
 
-This project was developed by Pierre Marquet ([GitHub link](https://github.com/SokouPM)) as part of an assignment.<br>
+This project was developed by me ([Pierre Marquet](https://github.com/SokouPM)) as part of an assignment.<br>
 It is a web application that allows users to create Azure virtual machines using React and Node.js technologies.
 
 ## 1. Technologies Used ‍💻
@@ -37,7 +37,7 @@ AZURE_SUBSCRIPTION_ID={your_subscription_id}
 
 To start the application, type and run the `npm start` command in your terminal.
 Open [http://localhost:3000](http://localhost:3000) to view the application in your browser.<br>
-**⚠️IMPORTANT: DON'T USE INTERNET EXPLORER⚠️**.
+**⚠️ IMPORTANT: DON'T USE INTERNET EXPLORER TO RUN THE APPLICATION ⚠️**
 
 ### 3.4. App login credentials 👩‍💻
 
@@ -52,10 +52,18 @@ This application has 3 users with different access rights:
 You can use these credentials to log in to the application, also you can modify them or create another one in
 the `src/data/users.json` file.
 
+### 3.5. Using the application 🖱️
+
 Once logged in, you will be redirected to the VM list page.<br>
-**⚠️IMPORTANT: If a virtual machine does not display its IP address, wait 1 minute and reload the page⚠️**<br>
+**⚠️ IMPORTANT: If a virtual machine does not display its IP address, wait 1 minute and reload the page ⚠️**
+
 You can create a VM by clicking on the "Create VM" button at the left on the side nav menu.<br>
-**⚠️IMPORTANT: The VM creation process can take up to 5 minutes.⚠️**
+**⚠️ IMPORTANT: The VM creation process can take up to 5 minutes. ⚠️**
+
+After creating a VM, you will be redirected to the VM list page, and you will see your VM in the list and the VM will be
+deleted after 10 minutes.<br>
+**⚠️ ️IMPORTANT: If you want to change the deleting time, go to `src/backend/vm.js` at line around
+17 `const deleteTime = 600000` and change the value (_in miniseconds_) ⚠️**
 
 ## 4. Application structure 🗂️
 

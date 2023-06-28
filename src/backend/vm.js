@@ -12,7 +12,9 @@ const logger = pino({
     options: { colorize: true },
   },
 })
-const deleteTime = 600000
+
+// * deleting vm time in ms, you can change it
+const deleteTime = 600000 // ? default: 600000 (10 minutes)
 
 const createAndDeleteVmFunction = async (req) => {
   const { publisher, offer, sku } = req
