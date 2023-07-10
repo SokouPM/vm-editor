@@ -74,7 +74,7 @@ The application is composed of the following files and folders:
 #### 4.1.1 src folder 📂
 
 - `src/App.js`: The main component of the application (Javascript starting code).
-- `src/index.css` :A main CSS file of the application (created with React).
+- `src/index.css` : A main CSS file of the application (created with React).
 - `src/index.js`: The React starting code.
 
 #### 4.1.2 public folder 📂
